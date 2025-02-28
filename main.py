@@ -1,5 +1,7 @@
 import curses
+import json
 from about_me import about_me  # Import the about_me function
+from game import game_main #Import the game function
 
 def draw_box(stdscr, y, x, height, width, color_pair):
     """Draw a box with the given dimensions and color."""
@@ -18,6 +20,11 @@ def draw_button(stdscr, y, x, label, selected, color_pair):
         stdscr.attron(curses.color_pair(color_pair))
     stdscr.addstr(y, x, '[' + label + ']')
     stdscr.attroff(curses.color_pair(color_pair) | curses.A_BOLD | curses.A_REVERSE)
+
+def clear_leaderboard():
+    with open("leaderboard.json", 'w') as file:
+        json.dump([], file)  # Empty leaderboard
+
 
 def main(stdscr):
     curses.curs_set(0)  # Hide the cursor
@@ -49,9 +56,9 @@ def main(stdscr):
 
     # Buttons
     button_y = message_box_y + message_box_height + 2
-    button_x_start = (screen_width - 30) // 2
-    buttons = ["Start", "Quit", "About Me"]
-    button_positions = [button_x_start, button_x_start + 12, button_x_start + 24]
+    button_x_start = (screen_width - 60) // 2
+    buttons = ["Start", "Quit", "About Me", "Clear Leaderboard"]
+    button_positions = [button_x_start, button_x_start + 12, button_x_start + 24, button_x_start + 40]
     selected_button = 0  # Index of the selected button
 
     # Message text
@@ -105,16 +112,20 @@ def main(stdscr):
 
         # Navigate between buttons
         if key in [curses.KEY_LEFT, curses.KEY_RIGHT]:
-            selected_button = (selected_button + (1 if key == curses.KEY_RIGHT else -1)) % 3
+            selected_button = (selected_button + (1 if key == curses.KEY_RIGHT else -1)) % 4  # Adjusted for 4 buttons
         elif key in [curses.KEY_ENTER, 10, 13]:  # Enter key
-            if selected_button == 0:  # "Start" button pressed
-                stdscr.addstr(button_y + 2, button_x_start, "Start clicked!")
+            if selected_button == 0:  # "Start" button
+                game_main(stdscr)
+            elif selected_button == 1:  # "Quit" button
+                break
+            elif selected_button == 2:  # "About Me" button
+                about_me(stdscr)
+            elif selected_button == 3:  # "Clear Leaderboard" button
+                clear_leaderboard()
+                stdscr.addstr(button_y + 2, button_x_start, "Leaderboard Cleared!", curses.color_pair(2))
                 stdscr.refresh()
                 curses.napms(1000)  # Pause for 1 second
-            elif selected_button == 1:  # "Quit" button pressed
-                break
-            elif selected_button == 2:  # "About Me" button pressed
-                about_me(stdscr)  # Call the about_me function
+
         elif key == ord('q'):  # Exit on 'q'
             break
 

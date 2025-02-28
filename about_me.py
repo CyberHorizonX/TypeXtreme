@@ -1,4 +1,5 @@
 import curses
+import textwrap
 
 def draw_box(stdscr, y, x, height, width, color_pair):
     """Draw a box with the given dimensions and color."""
@@ -34,8 +35,8 @@ def about_me(stdscr):
 
     # Define dimensions and positions
     # About Me box
-    about_box_height = 10
-    about_box_width = 50
+    about_box_height = 25
+    about_box_width = 80
     about_box_y = 2
     about_box_x = (screen_width - about_box_width) // 2
 
@@ -45,12 +46,19 @@ def about_me(stdscr):
     selected_button = 0  # Index of the selected button
 
     # About Me text
-    about_text = [
-        "This is the About Me screen.",
-        "Here you can find information about the game",
-        "and its developer.",
-        "Feel free to explore and enjoy the game!"
-    ]
+    about_text = '''
+    Hello there! I'm the creator of TypeXtream, a project born from my passion for programming and problem-solving. I've always been fascinated by how technology can make learning more engaging, and this typing test is my way of bringing that idea to life. With TypeXtream, I wanted to go beyond just a basic typing speed test—I aimed to create something that challenges users while also keeping the experience smooth and enjoyable.
+
+    This project features different test modes, including word-based, string-based, and alphanumeric challenges, along with a countdown timer, real-time error tolerance, and a visually appealing curses-based UI. The goal? To provide an exciting typing experience that helps users improve their speed and accuracy without feeling restricted by traditional typing tests.
+
+    I have a strong interest in cybersecurity, back-end developement and problem-solving, and I’m always eager to explore new ideas. Whether it's competitive programming, ethical hacking, or system automation, I enjoy diving deep into the technical world. TypeXtream is just one of the many projects I’ve worked on, and I plan to keep refining it while also developing more creative tools in the future.
+
+    If you're using TypeXtream, I hope you find it helpful, fun, and a great way to challenge yourself. Keep typing, keep improving, and most importantly—enjoy the process!
+    '''
+
+    # Wrap the text to fit within the box
+    wrapped_text = textwrap.fill(about_text, width=about_box_width - 4)
+    wrapped_lines = wrapped_text.split('\n')
 
     while True:
         stdscr.clear()
@@ -63,8 +71,8 @@ def about_me(stdscr):
         
         # Draw About Me text
         stdscr.attron(curses.color_pair(1))
-        for i, line in enumerate(about_text):
-            if i >= about_box_height - 2:  # Ensure text doesn't overflow the box
+        for i, line in enumerate(wrapped_lines):
+            if i >= about_box_height - 4:  # Ensure text doesn't overflow the box
                 break
             stdscr.addstr(about_box_y + 2 + i, about_box_x + 2, line)
         stdscr.attroff(curses.color_pair(1))
